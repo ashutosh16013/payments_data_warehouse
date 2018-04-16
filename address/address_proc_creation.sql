@@ -3,6 +3,7 @@ use staging_payments
 GO
 
 Drop proc address_asis_valid;
+drop proc address_valid_reception
 create proc address_asis_valid
 as
 begin
