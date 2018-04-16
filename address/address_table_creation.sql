@@ -13,7 +13,7 @@ create table address_asis(
 	city varchar(100),
 	country varchar(100),
 	address_pincode int,
-	customer_id int not null, --Change to foreign key later
+	customer_id int not null default 0, --Change to foreign key later
 	address_type varchar(100)
 );
 

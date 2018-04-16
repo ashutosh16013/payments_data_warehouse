@@ -30,6 +30,9 @@ begin
 		isnull(address_type, ''),
 		'VALID'
 		from dbo.address_asis;
+
+	update dbo.address_valid set invalid_flag='INVALID'
+	where address_pincode='' OR country='' OR customer_id=0
 end
 
 Drop proc address_valid_reception;
