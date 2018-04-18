@@ -36,8 +36,8 @@ create table dbo.balance_reception(
 
 use edw_payments
 GO
-drop table fact_transaction
-CREATE TABLE fact_transaction (
+drop table fact_balance
+CREATE TABLE fact_balance (
     balance_SK integer primary key,
     date_code date,
     transaction_dept_SK varchar(20) NULL,

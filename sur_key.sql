@@ -58,3 +58,11 @@ CREATE SEQUENCE [dbo].[transaction2_sur_key_sequence]
  CACHE 
 GO
 
+CREATE SEQUENCE [dbo].[balance_sur_key_sequence] 
+ AS [int]
+ START WITH 1
+ INCREMENT BY 1
+ MINVALUE 1
+ MAXVALUE 2147483647
+ CACHE 
+GO

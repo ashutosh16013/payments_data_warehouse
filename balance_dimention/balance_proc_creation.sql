@@ -13,7 +13,7 @@ USE staging_payments
 GO
 
 sp_help balance_reception
-drop proc proc_fact_payments_transaction_asis_valid
+drop proc proc_fact_payments_balance_asis_valid
 CREATE PROC [dbo].[proc_fact_payments_balance_asis_valid]
 as
 begin
@@ -46,7 +46,7 @@ end
 GO
 
 
-drop proc proc_fact_payments_transaction_valid_reception
+drop proc proc_fact_payments_balance_valid_reception
 CREATE PROC [dbo].[proc_fact_payments_balance_valid_reception]
 as
 begin
@@ -55,11 +55,11 @@ begin
 
     INSERT INTO [balance_reception]
         (
-         balance_SK
-         date_code
-         transaction_dept_SK
-         department_SK
-         amount_due
+         balance_SK,
+         date_code,
+         transaction_dept_SK,
+         department_SK,
+         amount_due,
          amount_paid
         )
     select
@@ -68,13 +68,11 @@ begin
         T.transaction_dept_SK,
         D.department_SK,
         amount_due,
-        amount_paid,
-       
-
+        amount_paid
         FROM
         (Select * from [dbo].balance_valid where invalid_flag='VALID') X
         INNER JOIN edw_payments.dbo.dim_transaction_dept T
-        ON X.transaction_dept_code = P.transaction_dept_code and P.updated_dts=CAST('2999-01-01' AS DATE)
+        ON X.transaction_dept_code = T.transaction_dept_code and T.updated_dts=CAST('2999-01-01' AS DATE)
         INNER JOIN edw_payments.dbo.dim_department D
 end
 GO
@@ -83,39 +81,40 @@ GO
 --reception to edw for fact transaction
 
 sp_help fact_transaction
-CREATE PROC proc_fact_transaction_reception_edw
+
+CREATE PROC proc_fact_balance_reception_edw
 as
 begin
 
 UPDATE A
 SET record_flag='O'
-FROM edw_sales.dbo.fact_transaction A
-INNER JOIN staging_paments.dbo.transaction_reception R
-ON A.product_SK = R.product_SK
-AND A.customer_sur_key = R.SK
-AND A.date_sur_key = R.SK
+FROM edw_payments.dbo.fact_balance A
+INNER JOIN staging_payments.dbo.balance_reception R
+ON A.transaction_dept_SK = R.transaction_dept_SK
+AND A.department_SK = R.department_SK
 
-INSERT INTO edw_payments.dbo.fact_transaction
+INSERT INTO edw_payments.dbo.fact_balance
 (
-    transaction_SK,
-    product_SK,
-    customer_SK,
-    date_SK,
+    balance_SK,
+    date_code,
+    transaction_dept_SK,
+    department_SK,
+    amount_due,
     amount_paid,
-    pdt_price,
     record_flag
 )
 
 SELECT
-    transaction_SK,
-    product_SK,
-    customer_SK,
-    date_SK,
+    balance_SK,
+    date_code,
+    transaction_dept_SK,
+    department_SK,
+    amount_due,
     amount_paid,
-    pdt_price,
     'C'
-    from staging_payments.dbo.transaction_reception
+    from staging_payments.dbo.balance_reception
 
 end
+
 
 GO
